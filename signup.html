@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        #erName, #erPass, #erName2, #erPass2, #erEmail, #erPhone {
+            display: none;
+            color: red;
+        }
+        .active {
+            display: block;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        p {
+            margin: 5px 0;
+            font-size: 0.875em;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.875em;
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 30px;
+        }
+
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <form id="registrationForm">
+        <h2>Đăng Ký</h2>
+        <div>
+            <label for="username">Tên đăng nhập:</label>
+            <input type="text" id="username" name="username" onfocusout=checkUserName()>
+            <p id="erName" class="error">Tên đăng nhập không được bỏ trống!</p>
+            <p id="erName2" class="error">Tên đăng nhập không được chứa dấu cách!</p>
+            <p id="erName3" class="error">Tên đăng nhập không được chứa ký tự đặc biệt!</p>
+        </div>
+        <div>
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" name="password" onfocusout=checkPassword()>
+            <p id="erPass" class="error">Mật khẩu không được bỏ trống!</p>
+            <p id="erPass2" class="error">Mật khẩu không được chứa dấu cách!</p>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" onfocusout=checkEmail()>
+            <p id="erEmail" class="error">Email không hợp lệ!</p>
+        </div>
+        <div>
+            <label for="phone">Số điện thoại:</label>
+            <input type="text" id="phone" name="phone" onfocusout=checkPhone()>
+            <p id="erPhone" class="error">Số điện thoại không hợp lệ!</p>
+        </div>
+        <div>
+            <input type="submit" id="submit" value="Đăng Ký" onclick="signup(event)">
+        </div>
+        <div class="login-link">
+            <p>Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+        </div>
+    </form>
+    <script src="accounts.js"></script>
+    <script>
+        function saveAccounts() {
+            localStorage.setItem('accounts', JSON.stringify(accounts));
+        }
+        function loadAccounts() {
+            const storedAccounts = localStorage.getItem('accounts');
+            if (storedAccounts) {
+                return JSON.parse(storedAccounts);
+            }
+            return [];
+        }
+        var accounts = loadAccounts();
+        function signup(event) {
+            event.preventDefault();
+            
+            checkUserName();
+            checkPassword();
+            checkEmail();
+            checkPhone();
+            
+            var errors = document.querySelectorAll('.error');
+            var hasError = false;
+
+            errors.forEach(function(error) {
+                if (error.style.display === "block") {
+                    hasError = true;
+                }
+            });
+
+            if (!hasError) {
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+                var email = document.getElementById("email").value;
+                var phone = document.getElementById("phone").value;
+
+                accounts.push({ username: username, password: password, email: email, phone: phone });
+                saveAccounts();
+                console.log(accounts);
+                alert("Đăng ký thành công!");
+                setTimeout(function() {
+                    window.location.href = "login.html";
+                }, 1000);
+            } else {
+                alert("Vui lòng sửa các lỗi trên biểu mẫu trước khi gửi!");
+            }
+        }
+
+
+        function checkUserName() {
+            var username = document.getElementById("username").value;
+            var errName = document.getElementById("erName");
+            var errName2 = document.getElementById("erName2");
+            var errName3 = document.getElementById("erName3");
+
+            if (username === "") {
+                errName.style.display = "block";
+            } else {
+                errName.style.display = "none";
+            }
+
+            var regxSpace = /\s/;
+            if (username !== "" && regxSpace.test(username)) {
+                errName2.style.display = "block";
+            } else {
+                errName2.style.display = "none";
+            }
+
+            var regxSpecial = /[!@#$%^&*(),.?":{}|<>]/;
+            if (username !== "" && regxSpecial.test(username)) {
+                errName3.style.display = "block";
+            } else {
+                errName3.style.display = "none";
+            }
+        }
+
+        function checkPassword() {
+            var password = document.getElementById("password").value;
+            var errPass = document.getElementById("erPass");
+            var errPass2 = document.getElementById("erPass2");
+
+            if (password === "") {
+                errPass.style.display = "block";
+            } else {
+                errPass.style.display = "none";
+            }
+
+            var regxSpace = /\s/;
+            if (password !== "" && regxSpace.test(password)) {
+                errPass2.style.display = "block";
+            } else {
+                errPass2.style.display = "none";
+            }
+        }
+
+        function checkEmail() {
+            var email = document.getElementById("email").value;
+            var errEmail = document.getElementById("erEmail");
+            var regx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            var isValidEmail = regx.test(email);
+            if (!isValidEmail) {
+                errEmail.textContent = "Email không hợp lệ!";
+                errEmail.style.display = "block";
+                return;
+            }
+            var emailExists = accounts.some(account => account.email === email);
+            if (emailExists) {
+                errEmail.textContent = "Email đã tồn tại!";
+                errEmail.style.display = "block";
+                return;
+            }
+            errEmail.style.display = "none";
+        }
+
+
+        function checkPhone() {
+            var phone = document.getElementById("phone").value;
+            var errPhone = document.getElementById("erPhone");
+
+            if (phone === "") {
+                errPhone.textContent = "Số điện thoại không được bỏ trống!";
+                errPhone.style.display = "block";
+                return;
+            }
+
+            var regx = /^(84|0)\d{9,10}$/;
+            if (!regx.test(phone)) {
+                errPhone.textContent = "Số điện thoại không hợp lệ!";
+                errPhone.style.display = "block";
+            } else {
+                errPhone.style.display = "none";
+            }
+        }
+
+        document.getElementById("username").addEventListener("input", checkUserName);
+        document.getElementById("password").addEventListener("input", checkPassword);
+        document.getElementById("email").addEventListener("input", checkEmail);
+        document.getElementById("phone").addEventListener("input", checkPhone);
+
+    </script>
+</body>
+</html>
